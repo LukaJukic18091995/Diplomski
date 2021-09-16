@@ -1,0 +1,58 @@
+using UnityEngine;
+
+public class InventoryUI : MonoBehaviour
+{
+
+    Inventory inventory;
+    InventorySlot[] slots;
+
+    public GameObject inventoryUI;
+
+    public Transform itemsParent;
+
+    void Start()
+    {
+        inventory = Inventory.instance;
+
+        // Triggeramo onItemChangedCallback svaki put kad se item doda ili obriše. 
+        // Sad pozivamo UpdateUI funkciju svaki put kad se to dogodi.
+        inventory.onItemChangedCallback += UpdateUI;
+
+
+
+        slots = itemsParent.GetComponentsInChildren<InventorySlot>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetButtonDown("Inventory"))
+        {
+            inventoryUI.SetActive(!inventoryUI.activeSelf);
+        }
+    }
+
+
+    void UpdateUI()
+    {
+        for (int x = 0; x < slots.Length; x++) 
+        {
+            slots[x].ClearSlot();
+        }
+        //loop kroz sve slotove
+        Debug.Log("Poziva se update");
+        for (int i = 0; i < slots.Length; i++) 
+        {
+            if (i < inventory.items.Count) 
+            {
+                Debug.Log("Dodali smo item u slot broj: " + i);
+                slots[i].AddItem(inventory.items[i]);
+            }
+            else 
+            {
+                Debug.Log("i je " + i + "   count itema je: " + inventory.items.Count);
+                slots[i].ClearSlot(); 
+            }
+        }
+    }
+}
