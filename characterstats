@@ -1,0 +1,71 @@
+using UnityEngine;
+
+public class CharacterStats : MonoBehaviour
+{
+
+    public int maxHealth = 100;
+    public int currentHealth { get; private set; } //sve klase dobavljaju value, ali se može postaviti samo unutar ove klase
+
+    public Stat damage;
+    public Stat armor;
+
+    public event System.Action<int, int> OnHealthChanged;
+
+    private void Awake()
+    {
+        currentHealth = maxHealth;
+    }
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            //TakeDamage(10); 
+        }
+    }
+
+
+    public void TakeDamage(int damage)
+    {
+
+        damage -= armor.GetValue();
+        damage = Mathf.Clamp(damage, 0, int.MaxValue); //da nikad ne bude manji od 0
+
+
+        currentHealth -= damage;
+        Debug.Log(transform.name + " takes " + damage + " damage.");
+
+        if (OnHealthChanged != null)
+        {
+            OnHealthChanged(maxHealth, currentHealth);
+        }
+
+        if (currentHealth <= 0) 
+        {
+
+            Die();
+        
+        }
+    }
+
+    public void HealDamage(int potionHealth)
+    {
+        currentHealth += potionHealth;
+
+        if (OnHealthChanged != null)
+        {
+            OnHealthChanged(maxHealth, currentHealth);
+        }
+    }
+
+    public virtual void Die()
+    {
+
+        //virtual jer će bit overriden zbog različitih smrti, ovisno je li naš lik koji će se respawnat ili neprijatelj
+
+        Debug.Log(transform.name + " died.");
+
+    }
+
+}
